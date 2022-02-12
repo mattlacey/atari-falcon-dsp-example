@@ -1,6 +1,5 @@
 #include "dsp_internal.h"
 
-#ifndef HOST
 #include <stdio.h>
 #include "dsp_fix-asm.h"
 
@@ -30,63 +29,34 @@ int loadDspBinary( const char* sPath )
 	return asm_dsp_load_program( buf, len / 3 );
 }
 
-#else
-static DspWrapperInfo dspWrapperInfo;
-
-void setDspWrapper( const DspWrapperInfo* pDspWrapperInfo )
-{
-	dspWrapperInfo = *pDspWrapperInfo;
-}
-#endif
-
 int8_t dspReceiveByte( void )
 {
-#ifdef HOST
-	return dspWrapperInfo.dspReceiveByte( dspWrapperInfo.pObject );
-#else
 	WAIT_RX;
 	return *(DSP_HOST_BYTE);
-#endif
 }
 
 int16_t dspReceiveWord( void )
 {
-#ifdef HOST
-	return dspWrapperInfo.dspReceiveWord( dspWrapperInfo.pObject );
-#else
 	WAIT_RX;
 	return *(DSP_HOST_WORD);
-#endif
 }
 
 int32_t dspReceiveSignedLong( void )
 {
-#ifdef HOST
-	return dspWrapperInfo.dspReceiveSignedLong( dspWrapperInfo.pObject );
-#else
 	WAIT_RX;
 	return ( *(DSP_HOST_LONG) << 8 ) >> 8;
-#endif
 }
 
 uint32_t dspReceiveUnsignedLong( void )
 {
-#ifdef HOST
-	return dspWrapperInfo.dspReceiveUnsignedLong( dspWrapperInfo.pObject );
-#else
 	WAIT_RX;
 	return *(DSP_HOST_LONG) & 0x00ffffff;
-#endif
 }
 
 void dspSendLong( int32_t value )
 {
-#ifdef HOST
-	dspWrapperInfo.dspSendLong( dspWrapperInfo.pObject, value );
-#else
 	WAIT_TX;
 	*(DSP_HOST_LONG) = value;
-#endif
 }
 
 
